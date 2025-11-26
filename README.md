@@ -30,3 +30,10 @@ Resets counter when you click Reset or Clear
 Updates in real-time as the simulation runs
 
 Try running it and watch patterns stabilize! Most random patterns will stabilize after 50-200 generations.
+
+Ideas for Future Version:
+
+1. Add user customization features (Select intial seed size, detect period-3 and high oscilations, detect pop. stability)
+2. Add pause button
+3. More detailed analysis after stabilization
+4. Continue to optimize 
