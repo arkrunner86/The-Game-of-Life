@@ -10,7 +10,8 @@ public class Conway2DFixed {
 	private final int height;
 	private final int size;
 	private int seedCount = 9500;
-	
+	private boolean wrapperMode = false;  // false = bounded, true = wrapper (toroidal)
+
 	byte[] data;
 	
 	public Conway2DFixed(){
@@ -49,7 +50,7 @@ public class Conway2DFixed {
 	
 	/**
 	 * Checks if the cell should be alive in the next generation
-	 * FIXED VERSION with proper boundary checking
+	 * Supports both bounded and wrapper (toroidal) modes
 	 * @param x The x position
 	 * @param y The y position
 	 * @param d The grid data
@@ -58,23 +59,35 @@ public class Conway2DFixed {
 	protected int isAlive(int x, int y, byte[] d){
 		int count = 0;
 		int pos1 = y * width + x;
-		
+
 		// Check all 8 neighbors
 		for ( int i = x-1; i <= x + 1; i++ ){
 			for ( int j = y - 1; j <= y + 1; j++ ){
-				// FIX #1: Check boundaries BEFORE calculating position
-				if ( i >= 0 && i < width && j >= 0 && j < height ){
-					int pos = j * width + i;
-					// FIX #2: Skip the cell itself
-					if ( pos != pos1 ){
-						if ( d[pos] == 1 ){
-							count++;
-						}
+				int actualI, actualJ;
+
+				if (wrapperMode) {
+					// Wrapper mode: wrap around edges using modulo
+					actualI = (i + width) % width;
+					actualJ = (j + height) % height;
+				} else {
+					// Bounded mode: check boundaries
+					if ( i < 0 || i >= width || j < 0 || j >= height ){
+						continue;  // Skip out-of-bounds neighbors
+					}
+					actualI = i;
+					actualJ = j;
+				}
+
+				int pos = actualJ * width + actualI;
+				// Skip the cell itself
+				if ( pos != pos1 ){
+					if ( d[pos] == 1 ){
+						count++;
 					}
 				}
 			}
 		}
-		
+
 		// Apply Conway's rules
 		if ( d[pos1] == 0 ){
 			// Dead cell
@@ -151,6 +164,29 @@ public class Conway2DFixed {
 		}
 	}
 	
+	/**
+	 * Toggles between bounded and wrapper (toroidal) mode
+	 */
+	public void toggleWrapperMode(){
+		wrapperMode = !wrapperMode;
+	}
+
+	/**
+	 * Sets the wrapper mode
+	 * @param enabled true for wrapper mode, false for bounded mode
+	 */
+	public void setWrapperMode(boolean enabled){
+		wrapperMode = enabled;
+	}
+
+	/**
+	 * Gets the current mode
+	 * @return true if wrapper mode, false if bounded mode
+	 */
+	public boolean isWrapperMode(){
+		return wrapperMode;
+	}
+
 	// Getters for testing
 	public int getWidth(){ return width; }
 	public int getHeight(){ return height; }

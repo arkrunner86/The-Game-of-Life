@@ -63,11 +63,12 @@ public class ConwayMain extends JFrame {
         
         // Create control panel
         JPanel controlPanel = new JPanel();
-        
+
         JButton startStopBtn = new JButton("Start");
         JButton stepBtn = new JButton("Step");
         JButton resetBtn = new JButton("Reset");
         JButton clearBtn = new JButton("Clear");
+        JButton toggleModeBtn = new JButton("Mode: Bounded");
         
         // Timer for animation
         timer = new Timer(100, e -> {
@@ -122,11 +123,23 @@ public class ConwayMain extends JFrame {
             gridPanel.repaint();
             updateStatus();
         });
-        
+
+        toggleModeBtn.addActionListener(e -> {
+            game.toggleWrapperMode();
+            if (game.isWrapperMode()) {
+                toggleModeBtn.setText("Mode: Wrapper");
+            } else {
+                toggleModeBtn.setText("Mode: Bounded");
+            }
+            resetStabilityTracking();
+            updateStatus();
+        });
+
         controlPanel.add(startStopBtn);
         controlPanel.add(stepBtn);
         controlPanel.add(resetBtn);
         controlPanel.add(clearBtn);
+        controlPanel.add(toggleModeBtn);
         
         add(controlPanel, BorderLayout.SOUTH);
         
@@ -199,16 +212,18 @@ public class ConwayMain extends JFrame {
     }
     
     private void updateStatus() {
-        String statusText = "Generation: " + generationCount + 
+        String modeText = game.isWrapperMode() ? "Wrapper" : "Bounded";
+        String statusText = "Mode: " + modeText +
+                          "  |  Generation: " + generationCount +
                           "  |  Alive: " + game.countAlive() + " cells";
-        
+
         if (isStable) {
             int changeCount = stableAtGeneration - 1;
             statusText += "  |  STABLE (stopped changing after " + changeCount + " iterations)";
         } else {
             statusText += "  |  Evolving...";
         }
-        
+
         statusLabel.setText(statusText);
     }
     
