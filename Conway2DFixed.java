@@ -49,7 +49,7 @@ public class Conway2DFixed {
 	
 	/**
 	 * Checks if the cell should be alive in the next generation
-	 * FIXED VERSION with proper boundary checking
+	 * TOROIDAL VERSION with wrapping boundaries
 	 * @param x The x position
 	 * @param y The y position
 	 * @param d The grid data
@@ -58,23 +58,25 @@ public class Conway2DFixed {
 	protected int isAlive(int x, int y, byte[] d){
 		int count = 0;
 		int pos1 = y * width + x;
-		
-		// Check all 8 neighbors
+
+		// Check all 8 neighbors with toroidal wrapping
 		for ( int i = x-1; i <= x + 1; i++ ){
 			for ( int j = y - 1; j <= y + 1; j++ ){
-				// FIX #1: Check boundaries BEFORE calculating position
-				if ( i >= 0 && i < width && j >= 0 && j < height ){
-					int pos = j * width + i;
-					// FIX #2: Skip the cell itself
-					if ( pos != pos1 ){
-						if ( d[pos] == 1 ){
-							count++;
-						}
+				// Wrap coordinates for toroidal grid
+				// Using ((n % size) + size) % size to handle negative wrapping
+				int wrappedI = ((i % width) + width) % width;
+				int wrappedJ = ((j % height) + height) % height;
+				int pos = wrappedJ * width + wrappedI;
+
+				// Skip the cell itself
+				if ( pos != pos1 ){
+					if ( d[pos] == 1 ){
+						count++;
 					}
 				}
 			}
 		}
-		
+
 		// Apply Conway's rules
 		if ( d[pos1] == 0 ){
 			// Dead cell
