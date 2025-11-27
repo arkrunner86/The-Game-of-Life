@@ -34,6 +34,5 @@ Try running it and watch patterns stabilize! Most random patterns will stabilize
 Ideas for Future Version:
 
 1. Add user customization features (Select intial seed size, detect period-3 and high oscilations, detect pop. stability)
-2. Add pause button
-3. More detailed analysis after stabilization
-4. Continue to optimize 
+2. Log simulation results after each run
+3. Continue to optimize 
